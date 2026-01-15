@@ -25,8 +25,12 @@ public class User {
     private boolean altered;
     private boolean riftbound;
     private boolean onePiece;
-    private boolean w40k;
-    private boolean waos;
+// DANS VISUAL STUDIO (BACKEND)
+@Column(name = "warhammer40k") // On dit à la DB : "ma variable w40k va dans la colonne warhammer40k"
+private boolean w40k;
+
+@Column(name = "warhammer_aos")
+private boolean waos;
     private boolean boardgames;
     private boolean rpg;
 
