@@ -36,5 +36,9 @@ public ResponseEntity<?> login(@RequestBody User login) {
         return ResponseEntity.status(401).body("Email ou mot de passe incorrect");
     }
 }
-
+@GetMapping("/check-email")
+public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+    boolean exists = userService.existsByEmail(email);
+    return ResponseEntity.ok(exists);
+}
 }
