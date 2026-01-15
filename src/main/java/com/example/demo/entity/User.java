@@ -52,7 +52,7 @@ private boolean waos;
     public String getPostalCode() { return postalCode; }
     public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
     public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; 
+    public void setRole(String role) { this.role = role; }
     public boolean isMagic() { return magic; }
     public void setMagic(boolean magic) { this.magic = magic; }
     public boolean isPokemon() { return pokemon; }
