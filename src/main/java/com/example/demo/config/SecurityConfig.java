@@ -13,19 +13,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Désactive le CSRF (nécessaire pour que Retrofit puisse envoyer des POST)
             .csrf(csrf -> csrf.disable())
-            
-            // 2. Configure les autorisations
             .authorizeHttpRequests(auth -> auth
-                // On autorise tout ce qui commence par /api/users/ sans authentification
                 .requestMatchers("/api/users/**").permitAll()
-                .requestMatchers("/api/events/**").permitAll() // Ajoute cette ligne !
-                // Le reste nécessite d'être connecté (si tu ajoutes d'autres fonctions plus tard)
+                .requestMatchers("/api/events/**").permitAll()
                 .anyRequest().authenticated()
             );
-
-);
 
         return http.build();
     }
