@@ -60,3 +60,4 @@ public ResponseEntity<?> joinEvent(@PathVariable Long eventId, @RequestParam Lon
     }
     return ResponseEntity.notFound().build(); // <--- Vérifie le ; ici
 } // <--- Vérifie la fermeture de la méthode
+}
