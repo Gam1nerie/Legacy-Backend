@@ -37,37 +37,26 @@ public class EventController {
     }
 
     // 3. Rejoindre un événement
-    @PostMapping("/{eventId}/join")
-    public ResponseEntity<?> joinEvent(@PathVariable Long eventId, @RequestParam Long userId) {
-        Optional<Event> eventOpt = eventRepository.findById(eventId);
-        Optional<User> userOpt = userRepository.findById(userId);
+@PostMapping("/{eventId}/join")
+public ResponseEntity<?> joinEvent(@PathVariable Long eventId, @RequestParam Long userId) {
+    Optional<Event> eventOpt = eventRepository.findById(eventId);
+    Optional<User> userOpt = userRepository.findById(userId);
 
-        if (eventOpt.isPresent() && userOpt.isPresent()) {
-            Event event = eventOpt.get();
-            User user = userOpt.get();
+    if (eventOpt.isPresent() && userOpt.isPresent()) {
+        Event event = eventOpt.get();
+        User user = userOpt.get();
 
-            // Vérifier si l'utilisateur est déjà inscrit
-            if (event.getParticipants().contains(user)) {
-                return ResponseEntity.badRequest().body("Vous êtes déjà inscrit à cet événement.");
-            }
-
-            // Vérifier s'il reste de la place
-            if (event.getParticipants().size() >= event.getNbrmax()) {
-                return ResponseEntity.badRequest().body("Cet événement est complet.");
-            }
-
-            event.getParticipants().add(user);
-            eventRepository.save(event);
-            return ResponseEntity.ok("Inscription réussie !");
-            
-            @GetMapping("/{id}")
-            public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-                return eventRepository.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-}
+        if (event.getParticipants().contains(user)) {
+            return ResponseEntity.badRequest().body("Déjà inscrit");
         }
-        
-        return ResponseEntity.notFound().build();
+
+        if (event.getParticipants().size() >= event.getNbrmax()) {
+            return ResponseEntity.badRequest().body("Complet");
+        }
+
+        event.getParticipants().add(user);
+        eventRepository.save(event);
+        return ResponseEntity.ok("Inscription réussie");
     }
-}
+    return ResponseEntity.notFound().build(); // <--- Vérifie le ; ici
+} // <--- Vérifie la fermeture de la méthode
