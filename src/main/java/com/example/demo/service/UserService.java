@@ -31,20 +31,18 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> loginUser(String email, String passwordSaisi) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            // --- VÉRIFICATION ICI ---
-            // On ne peut pas faire .equals() car le hash change à chaque fois.
-            // passwordEncoder.matches vérifie si le texte clair correspond au hash en base.
-            if (passwordEncoder.matches(passwordSaisi, user.getPassword())) {
-                return Optional.of(user);
-            }
+public Optional<User> loginUser(String email, String rawPassword) {
+    Optional<User> userOpt = userRepository.findByEmail(email);
+    
+    if (userOpt.isPresent()) {
+        User user = userOpt.get();
+        // Si tu utilises BCrypt (recommandé) :
+        if (passwordEncoder.matches(rawPassword, user.getPassword())) {
+            return Optional.of(user);
         }
-        return Optional.empty();
     }
+    return Optional.empty();
+}
     public boolean existsByEmail(String email) {
     return userRepository.findByEmail(email).isPresent();
 }

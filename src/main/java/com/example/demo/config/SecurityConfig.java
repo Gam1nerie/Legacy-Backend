@@ -20,9 +20,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // On autorise tout ce qui commence par /api/users/ sans authentification
                 .requestMatchers("/api/users/**").permitAll()
+                .requestMatchers("/api/events/**").permitAll() // Ajoute cette ligne !
                 // Le reste nécessite d'être connecté (si tu ajoutes d'autres fonctions plus tard)
                 .anyRequest().authenticated()
             );
+
+);
 
         return http.build();
     }
