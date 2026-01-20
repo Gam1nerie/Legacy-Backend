@@ -34,7 +34,8 @@ private boolean waos;
     private boolean boardgames;
     private boolean rpg;
 
-    private boolean isAdmin = false;
+@Column(name = "is_admin") 
+private boolean isAdmin = false;
 
 
     public Long getId() { return id; }
