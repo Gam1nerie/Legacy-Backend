@@ -35,6 +35,13 @@ public class EventController {
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
         return ResponseEntity.ok(eventRepository.save(event));
     }
+    // À ajouter dans ton EventController.java
+    @GetMapping("/{id}")
+    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+        return eventRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+}
 
     // 3. Rejoindre un événement
 @PostMapping("/{eventId}/join")
