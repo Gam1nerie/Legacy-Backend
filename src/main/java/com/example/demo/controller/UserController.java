@@ -37,8 +37,9 @@ public ResponseEntity<?> login(@RequestBody User login) {
     }
 }
 @GetMapping("/check-email")
-public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+public ResponseEntity<?> checkEmail(@RequestParam String email) {
     boolean exists = userService.existsByEmail(email);
-    return ResponseEntity.ok(exists);
+    // On renvoie un objet JSON : {"exists": true}
+    return ResponseEntity.ok().body(java.util.Collections.singletonMap("exists", exists));
 }
 }
