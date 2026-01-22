@@ -11,18 +11,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
+@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.disable()) // Désactive aussi le CORS pour le test
+            .cors(cors -> cors.configure(http)) // Active la config CORS par défaut
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/**").permitAll()
-                // On autorise explicitement tous les GET sur events
-                .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
-                // On autorise aussi les POST pour l'instant pour éviter les 403 à la création
-                .requestMatchers(HttpMethod.POST, "/api/events/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll() // ON AUTORISE TOUT LE TEMPS DU TEST
             );
 
         return http.build();
