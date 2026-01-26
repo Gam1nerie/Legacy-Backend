@@ -67,4 +67,23 @@ public ResponseEntity<?> joinEvent(@PathVariable Long eventId, @RequestParam Lon
     }
     return ResponseEntity.notFound().build(); // <--- Vérifie le ; ici
 } // <--- Vérifie la fermeture de la méthode
+
+@PostMapping("/{eventId}/leave")
+public ResponseEntity<?> leaveEvent(@PathVariable Long eventId, @RequestParam Long userId) {
+    Optional<Event> eventOpt = eventRepository.findById(eventId);
+    Optional<User> userOpt = userRepository.findById(userId);
+
+    if (eventOpt.isPresent() && userOpt.isPresent()) {
+        Event event = eventOpt.get();
+        User user = userOpt.get();
+
+        if (event.getParticipants().contains(user)) {
+            event.getParticipants().remove(user); // On retire l'utilisateur
+            eventRepository.save(event);
+            return ResponseEntity.ok("Désinscription réussie");
+        }
+        return ResponseEntity.badRequest().body("Vous n'êtes pas inscrit");
+    }
+    return ResponseEntity.notFound().build();
+}
 }
