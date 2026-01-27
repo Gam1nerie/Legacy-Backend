@@ -96,4 +96,14 @@ public ResponseEntity<?> addGuest(@PathVariable Long id, @RequestParam String fi
         return ResponseEntity.ok().build();
     }).orElse(ResponseEntity.notFound().build());
 }
+@PutMapping("/{id}")
+public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event eventDetails) {
+    return eventRepository.findById(id).map(event -> {
+        event.setLibelle(eventDetails.getLibelle());
+        event.setDescription(eventDetails.getDescription());
+        // Tu peux aussi ajouter la date ici si tu l'as envoyée
+        Event updated = eventRepository.save(event);
+        return ResponseEntity.ok(updated);
+    }).orElse(ResponseEntity.notFound().build());
+}
 }
