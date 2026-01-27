@@ -78,12 +78,22 @@ public ResponseEntity<?> leaveEvent(@PathVariable Long eventId, @RequestParam Lo
         User user = userOpt.get();
 
         if (event.getParticipants().contains(user)) {
-            event.getParticipants().remove(user); // On retire l'utilisateur
+            event.getParticipants().remove(user); 
             eventRepository.save(event);
             return ResponseEntity.ok("Désinscription réussie");
         }
         return ResponseEntity.badRequest().body("Vous n'êtes pas inscrit");
     }
     return ResponseEntity.notFound().build();
+}
+
+@PostMapping("/{id}/add-guest")
+public ResponseEntity<?> addGuest(@PathVariable Long id, @RequestParam String firstName, @RequestParam String lastName) {
+    return eventRepository.findById(id).map(event -> {
+        String fullName = firstName + " " + lastName;
+        event.getGuests().add(fullName.trim());
+        eventRepository.save(event);
+        return ResponseEntity.ok().build();
+    }).orElse(ResponseEntity.notFound().build());
 }
 }

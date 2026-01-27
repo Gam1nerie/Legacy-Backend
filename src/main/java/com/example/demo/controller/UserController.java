@@ -42,4 +42,10 @@ public ResponseEntity<?> checkEmail(@RequestParam String email) {
     // On renvoie un objet JSON : {"exists": true}
     return ResponseEntity.ok().body(java.util.Collections.singletonMap("exists", exists));
 }
+
+@GetMapping("/api/users/search")
+public ResponseEntity<List<User>> searchUsers(@RequestParam String query) {
+    // Cette méthode cherche les utilisateurs dont le nom ou prénom contient la "query"
+    return ResponseEntity.ok(userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(query, query));
+}
 }

@@ -47,4 +47,13 @@ public class Event {
 
 public double getPrix() { return prix; }
 public void setPrix(double prix) { this.prix = prix; }
+
+@ElementCollection
+@CollectionTable(name = "event_guests", joinColumns = @JoinColumn(name = "event_id"))
+@Column(name = "guest_name")
+private List<String> guests = new ArrayList<>();
+
+
+public List<String> getGuests() { return guests; }
+public void setGuests(List<String> guests) { this.guests = guests; }
 }
