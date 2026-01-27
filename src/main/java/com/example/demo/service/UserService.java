@@ -46,4 +46,7 @@ public Optional<User> loginUser(String email, String rawPassword) {
     public boolean existsByEmail(String email) {
     return userRepository.findByEmail(email).isPresent();
 }
+public List<User> searchUsers(String query) {
+    return userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(query, query);
+}
 }
