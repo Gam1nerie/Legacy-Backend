@@ -2,51 +2,34 @@ package com.example.demo.service;
 
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Import nécessaire
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import java.util.List;     // Import indispensable pour searchUsers
+import java.util.Optional; // Import indispensable pour loginUser
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder; // On déclare l'encodeur
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder(); // On l'initialise
     }
 
-    public User registerUser(User user) throws Exception {
-        Optional<User> existing = userRepository.findByEmail(user.getEmail());
-        if (existing.isPresent()) {
-            throw new Exception("Email déjà utilisé");
-        }
-        
-        // --- HACHAGE ICI ---
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
-        
+    public User registerUser(User user) {
         return userRepository.save(user);
     }
 
-public Optional<User> loginUser(String email, String rawPassword) {
-    Optional<User> userOpt = userRepository.findByEmail(email);
-    
-    if (userOpt.isPresent()) {
-        User user = userOpt.get();
-        // Si tu utilises BCrypt (recommandé) :
-        if (passwordEncoder.matches(rawPassword, user.getPassword())) {
-            return Optional.of(user);
-        }
+    public Optional<User> loginUser(String email, String password) {
+        return userRepository.findByEmail(email)
+                .filter(u -> u.getPassword().equals(password));
     }
-    return Optional.empty();
-}
+
     public boolean existsByEmail(String email) {
-    return userRepository.findByEmail(email).isPresent();
-}
-public List<User> searchUsers(String query) {
-    return userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(query, query);
-}
+        return userRepository.existsByEmail(email);
+    }
+
+    // C'est ici que List est utilisé (Ligne 49 probablement)
+    public List<User> searchUsers(String query) {
+        return userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(query, query);
+    }
 }
