@@ -104,12 +104,22 @@ public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Eve
         if (eventDetails.getDescription() != null) event.setDescription(eventDetails.getDescription());
         if (eventDetails.getDateEvenement() != null) event.setDateEvenement(eventDetails.getDateEvenement());
         if (eventDetails.getJeu() != null) event.setJeu(eventDetails.getJeu());
-        
-        // Pour les nombres, on vérifie s'ils sont supérieurs à 0
         if (eventDetails.getNbrmax() > 0) event.setNbrmax(eventDetails.getNbrmax());
         
         Event updated = eventRepository.save(event);
         return ResponseEntity.ok(updated);
+    }).orElse(ResponseEntity.notFound().build());
+}
+    @PostMapping("/{id}/remove-guest")
+public ResponseEntity<?> removeGuest(@PathVariable Long id, @RequestParam String guestName) {
+    return eventRepository.findById(id).map(event -> {
+        // On retire le nom de la liste des guests
+        if (event.getGuests() != null) {
+            event.getGuests().remove(guestName);
+            eventRepository.save(event);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().body("Liste d'invités vide");
     }).orElse(ResponseEntity.notFound().build());
 }
 }
