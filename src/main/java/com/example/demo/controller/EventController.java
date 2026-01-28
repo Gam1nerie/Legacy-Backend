@@ -99,15 +99,17 @@ public ResponseEntity<?> addGuest(@PathVariable Long id, @RequestParam String fi
 @PutMapping("/{id}")
 public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event eventDetails) {
     return eventRepository.findById(id).map(event -> {
-        // On ne met à jour que si les champs ne sont pas vides
-        if(eventDetails.getLibelle() != null) event.setLibelle(eventDetails.getLibelle());
-        if(eventDetails.getDescription() != null) event.setDescription(eventDetails.getDescription());
-        if(eventDetails.getDateEvenement() != null) event.setDateEvenement(eventDetails.getDateEvenement());
-        if(eventDetails.getNbrmax() != 0) event.setNbrmax(eventDetails.getNbrmax());
-        if(eventDetails.getJeu() != null) event.setJeu(eventDetails.getJeu());
+        // Mise à jour de chaque champ envoyé
+        if (eventDetails.getLibelle() != null) event.setLibelle(eventDetails.getLibelle());
+        if (eventDetails.getDescription() != null) event.setDescription(eventDetails.getDescription());
+        if (eventDetails.getDateEvenement() != null) event.setDateEvenement(eventDetails.getDateEvenement());
+        if (eventDetails.getJeu() != null) event.setJeu(eventDetails.getJeu());
         
-        Event updatedEvent = eventRepository.save(event);
-        return ResponseEntity.ok(updatedEvent);
+        // Pour les nombres, on vérifie s'ils sont supérieurs à 0
+        if (eventDetails.getNbrmax() > 0) event.setNbrmax(eventDetails.getNbrmax());
+        
+        Event updated = eventRepository.save(event);
+        return ResponseEntity.ok(updated);
     }).orElse(ResponseEntity.notFound().build());
 }
 }
