@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.List; // FIX 1 : Import manquant
+import java.util.List; 
 import java.util.Optional;
 
 @RestController
@@ -55,16 +55,6 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PostMapping("/{id}/remove-guest")
-public ResponseEntity<?> removeGuest(@PathVariable Long id, @RequestParam String guestName) {
-    return eventRepository.findById(id).map(event -> {
-        // On retire le nom de la liste des guests
-        if (event.getGuests() != null) {
-            event.getGuests().remove(guestName);
-            eventRepository.save(event);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().body("Liste d'invités vide");
-    }).orElse(ResponseEntity.notFound().build());
-}
+
+
 }
