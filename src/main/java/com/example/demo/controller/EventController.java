@@ -122,4 +122,12 @@ public ResponseEntity<?> removeGuest(@PathVariable Long id, @RequestParam String
         return ResponseEntity.badRequest().body("Liste d'invités vide");
     }).orElse(ResponseEntity.notFound().build());
 }
+
+@DeleteMapping("/{id}")
+public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+    return eventRepository.findById(id).map(event -> {
+        eventRepository.delete(event);
+        return ResponseEntity.ok().build();
+    }).orElse(ResponseEntity.notFound().build());
+}
 }
