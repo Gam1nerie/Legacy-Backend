@@ -19,10 +19,29 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> loginUser(String email, String password) {
-        return userRepository.findByEmail(email)
-                .filter(u -> u.getPassword().equals(password));
+public Optional<User> loginUser(String email, String password) {
+    System.out.println("Tentative de connexion pour l'email : " + email);
+    
+    Optional<User> userOpt = userRepository.findByEmail(email);
+    
+    if (userOpt.isPresent()) {
+        User user = userOpt.get();
+        System.out.println("Utilisateur trouvé en base !");
+        System.out.println("Mot de passe en base : " + user.getPassword());
+        System.out.println("Mot de passe reçu : " + password);
+        
+        if (user.getPassword().equals(password)) {
+            System.out.println("SUCCÈS : Les mots de passe correspondent.");
+            return Optional.of(user);
+        } else {
+            System.out.println("ÉCHEC : Les mots de passe ne correspondent pas.");
+        }
+    } else {
+        System.out.println("ÉCHEC : Aucun utilisateur trouvé avec cet email.");
     }
+    
+    return Optional.empty();
+}
 
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
