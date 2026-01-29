@@ -113,7 +113,7 @@ public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Eve
     @PostMapping("/{id}/remove-guest")
 public ResponseEntity<?> removeGuest(@PathVariable Long id, @RequestParam String guestName) {
     return eventRepository.findById(id).map(event -> {
-        // On retire le nom de la liste des guests
+
         if (event.getGuests() != null) {
             event.getGuests().remove(guestName);
             eventRepository.save(event);

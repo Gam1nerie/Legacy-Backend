@@ -55,6 +55,29 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+        return userRepository.findById(id).map(user -> {
+            // Mise à jour des infos personnelles
+            if (userDetails.getFirstName() != null) user.setFirstName(userDetails.getFirstName());
+            if (userDetails.getLastName() != null) user.setLastName(userDetails.getLastName());
+            if (userDetails.getPhone() != null) user.setPhone(userDetails.getPhone());
+            if (userDetails.getPostalCode() != null) user.setPostalCode(userDetails.getPostalCode());
 
+            // Mise à jour massive des préférences de jeux
+            user.setMagic(userDetails.isMagic());
+            user.setPokemon(userDetails.isPokemon());
+            user.setLorcana(userDetails.isLorcana());
+            user.setAltered(userDetails.isAltered());
+            user.setRiftbound(userDetails.isRiftbound());
+            user.setOnePiece(userDetails.isOnePiece());
+            user.setW40k(userDetails.isW40k());
+            user.setWaos(userDetails.isWaos());
+            user.setBoardgames(userDetails.isBoardgames());
+            user.setRpg(userDetails.isRpg());
 
+            User updated = userRepository.save(user);
+            return ResponseEntity.ok(updated);
+        }).orElse(ResponseEntity.notFound().build());
+    }
 }
