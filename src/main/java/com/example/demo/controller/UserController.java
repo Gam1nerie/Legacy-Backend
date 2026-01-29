@@ -16,7 +16,7 @@ public class UserController {
 
     private final UserService userService;
 
-    // Injection par constructeur (recommandé)
+    // On n'injecte QUE le service ici
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -41,43 +41,34 @@ public class UserController {
         }
     }
 
+    // Cette méthode manquait et est appelée par Android
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return userService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/check-email")
     public ResponseEntity<?> checkEmail(@RequestParam String email) {
         boolean exists = userService.existsByEmail(email);
         return ResponseEntity.ok().body(Collections.singletonMap("exists", exists));
     }
 
-    // FIX 2 : Utilisation de userService au lieu de userRepository pour la cohérence
-    @GetMapping("/search") // Note: le chemin est déjà /api/users via le RequestMapping
+    @GetMapping("/search")
     public ResponseEntity<List<User>> searchUsers(@RequestParam String query) {
-        // Cette méthode doit être créée dans ton UserService
         List<User> users = userService.searchUsers(query);
         return ResponseEntity.ok(users);
     }
 
+    // CORRECTION : On utilise userService.updateUser au lieu de userRepository
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        return userRepository.findById(id).map(user -> {
-            // Mise à jour des infos personnelles
-            if (userDetails.getFirstName() != null) user.setFirstName(userDetails.getFirstName());
-            if (userDetails.getLastName() != null) user.setLastName(userDetails.getLastName());
-            if (userDetails.getPhone() != null) user.setPhone(userDetails.getPhone());
-            if (userDetails.getPostalCode() != null) user.setPostalCode(userDetails.getPostalCode());
-
-            // Mise à jour massive des préférences de jeux
-            user.setMagic(userDetails.isMagic());
-            user.setPokemon(userDetails.isPokemon());
-            user.setLorcana(userDetails.isLorcana());
-            user.setAltered(userDetails.isAltered());
-            user.setRiftbound(userDetails.isRiftbound());
-            user.setOnePiece(userDetails.isOnePiece());
-            user.setW40k(userDetails.isW40k());
-            user.setWaos(userDetails.isWaos());
-            user.setBoardgames(userDetails.isBoardgames());
-            user.setRpg(userDetails.isRpg());
-
-            User updated = userRepository.save(user);
-            return ResponseEntity.ok(updated);
-        }).orElse(ResponseEntity.notFound().build());
+        try {
+            User updatedUser = userService.updateUser(id, userDetails);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
