@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -10,38 +11,37 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
+    /**
+     * Hache le mot de passe avant de sauvegarder l'utilisateur
+     */
     public User registerUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-public Optional<User> loginUser(String email, String password) {
-    System.out.println("Tentative de connexion pour l'email : " + email);
-    
-    Optional<User> userOpt = userRepository.findByEmail(email);
-    
-    if (userOpt.isPresent()) {
-        User user = userOpt.get();
-        System.out.println("Utilisateur trouvé en base !");
-        System.out.println("Mot de passe en base : " + user.getPassword());
-        System.out.println("Mot de passe reçu : " + password);
+    /**
+     * Utilise BCrypt pour comparer le mot de passe reçu avec le hachage en base
+     */
+    public Optional<User> loginUser(String email, String password) {
+        System.out.println("Tentative de connexion pour l'email : " + email);
         
-        if (user.getPassword().equals(password)) {
-            System.out.println("SUCCÈS : Les mots de passe correspondent.");
-            return Optional.of(user);
-        } else {
-            System.out.println("ÉCHEC : Les mots de passe ne correspondent pas.");
-        }
-    } else {
-        System.out.println("ÉCHEC : Aucun utilisateur trouvé avec cet email.");
+        return userRepository.findByEmail(email).filter(user -> {
+            boolean matches = passwordEncoder.matches(password, user.getPassword());
+            if (matches) {
+                System.out.println("SUCCÈS : Le mot de passe correspond via BCrypt.");
+            } else {
+                System.out.println("ÉCHEC : Le mot de passe ne correspond pas.");
+            }
+            return matches;
+        });
     }
-    
-    return Optional.empty();
-}
 
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
@@ -55,7 +55,9 @@ public Optional<User> loginUser(String email, String password) {
         return userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(query, query);
     }
 
-    // Logique de mise à jour déplacée ici
+    /**
+     * Met à jour les infos et les préférences de jeux
+     */
     public User updateUser(Long id, User details) {
         return userRepository.findById(id).map(user -> {
             // Infos perso
@@ -64,7 +66,7 @@ public Optional<User> loginUser(String email, String password) {
             if (details.getPhone() != null) user.setPhone(details.getPhone());
             if (details.getPostalCode() != null) user.setPostalCode(details.getPostalCode());
 
-            // Préférences (On met tout à jour car Android envoie l'objet complet)
+            // Préférences de jeux
             user.setMagic(details.isMagic());
             user.setPokemon(details.isPokemon());
             user.setLorcana(details.isLorcana());
